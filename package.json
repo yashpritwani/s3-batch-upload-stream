@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "async": "^3.2.5",
+    "aws-sdk": "^2.1631.0",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "scripts": {
+    "start": "node upload.js ./resumes",
+    "batch-upload": "node upload.js ./resumes"
+  }
+}
