@@ -4,15 +4,20 @@ const fs = require('fs');
 const path = require('path');
 const async = require('async');
 const util = require('util');
-const s3 = new AWS.S3();
-const readdir = util.promisify(fs.readdir);
-const stat = util.promisify(fs.stat);
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
+  region: process.env.AWS_REGION,
+  httpOptions: {
+    timeout: 166400000,
+    connectTimeout: 120000
+  }
 });
+
+const s3 = new AWS.S3();
+const readdir = util.promisify(fs.readdir);
+const stat = util.promisify(fs.stat);
 
 const uploadFileToS3 = (filePath, key) => {
   return new Promise((resolve, reject) => {
@@ -31,7 +36,7 @@ const uploadFileToS3 = (filePath, key) => {
       if (err) {
         reject(err);
       } else {
-        resolve(data.Location); // Resolve with the file location
+        resolve(data.Location);
       }
     });
   });
@@ -58,15 +63,25 @@ const uploadDirectory = async (dir) => {
     console.log(`Found ${files.length} files to upload.`);
     async.eachLimit(
       files,
-      20,
+      process.env.CONCURENCY || 20,
       async (file) => {
         const relativePath = path.relative(dir, file);
         const s3Key = path.join('', relativePath).replace(/\\/g, '/');
-        try {
-          await uploadFileToS3(file, s3Key);
-          console.log(`Uploaded: ${s3Key}`);
-        } catch (err) {
-          console.error(`Failed to upload ${s3Key}:`, err);
+        let retries = 3;
+        while (retries > 0) {
+          try {
+            await uploadFileToS3(file, s3Key);
+            console.log(`Uploaded: ${s3Key}`);
+            break;
+          } catch (err) {
+            console.error(`Failed to upload ${s3Key}:`, err);
+            retries -= 1;
+            if (retries === 0) {
+              console.error(`Giving up on ${s3Key}`);
+            } else {
+              console.log(`Retrying ${s3Key} (${3 - retries}/3)`);
+            }
+          }
         }
       },
       (err) => {
