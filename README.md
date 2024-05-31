@@ -7,5 +7,13 @@
 5. Run - 'npm start' or 'npm run batch-upload'
 
 
+# Enable Transfer Acceleration on Your S3 Bucket for fast transfers (Charges - 0.04$/GB):
+
+1. Go to the S3 console.
+2. Select your bucket.
+3. Go to the "Properties" tab.
+4. Under "Transfer Acceleration," click "Edit" and enable it.
+5. You will see the s3 link for transfer acceleration, click on save changes.
+
 
 ## Credits - @yashpritwani
