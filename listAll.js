@@ -71,16 +71,6 @@ const writeToFile = (directoryMap, fileList, outputFile) => {
     });
     folderSummaries.push({ directory, totalFiles: files.length, totalSize: folderSize });
 
-    stream.write(`Directory: ${directory}\n`);
-    files.forEach(file => {
-      const fileSizeMB = (file.Size / (1024 * 1024)).toFixed(2);
-      stream.write(`  ${file.Key} - ${fileSizeMB} MB\n`);
-    });
-    const folderSizeMB = (folderSize / (1024 * 1024)).toFixed(2);
-    stream.write(`Total Files: ${files.length}\n`);
-    stream.write(`Total Size: ${folderSizeMB} MB\n`);
-    stream.write('\n');
-
     totalSize += folderSize;
   });
 
@@ -95,6 +85,19 @@ const writeToFile = (directoryMap, fileList, outputFile) => {
     stream.write(`Directory: ${summary.directory}\n`);
     stream.write(`  Total Files: ${summary.totalFiles}\n`);
     stream.write(`  Total Size: ${folderSizeMB} MB\n\n`);
+  });
+
+  directoryMap.forEach((files, directory) => {
+    stream.write(`Directory: ${directory}\n`);
+    files.forEach(file => {
+      const fileSizeMB = (file.Size / (1024)).toFixed(2);
+      stream.write(`  ${file.Key} - ${fileSizeMB} KB\n`);
+    });
+    const folderSummary = folderSummaries.find(summary => summary.directory === directory);
+    const folderSizeMB = (folderSummary.totalSize / (1024 * 1024)).toFixed(2);
+    stream.write(`Total Files: ${folderSummary.totalFiles}\n`);
+    stream.write(`Total Size: ${folderSizeMB} MB\n`);
+    stream.write('\n');
   });
 
   stream.end();
