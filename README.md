@@ -29,4 +29,4 @@
 5. You will see the s3 link for transfer acceleration, click on save changes.
 
 
-## Credits - @yashpritwani
+## Credits - [yashpritwani](https://github.com/yashpritwani)
