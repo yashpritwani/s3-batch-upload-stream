@@ -8,6 +8,9 @@
   },
   "scripts": {
     "start": "node upload.js ./uploads",
-    "batch-upload": "node upload.js ./uploads"
+    "batch-upload": "node upload.js ./uploads",
+    "list": "node listAll.js",
+    "verifyUpload": "node uploadAndVerify.js ./uploads",
+    "verify": "node verify.js ./uploads"
   }
 }
